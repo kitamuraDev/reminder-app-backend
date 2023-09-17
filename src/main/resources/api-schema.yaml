@@ -1,0 +1,19 @@
+openapi: "3.0.0"
+
+# スキーマの情報
+info:
+  title: Reminder API Document
+  version: "0.0.1"
+  description: Reminder API のドキュメント
+
+# サーバ情報
+servers:
+  - url: http://localhost:8080
+
+# エンドポイント
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: OK
