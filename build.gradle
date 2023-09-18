@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.1.3'
 	id 'io.spring.dependency-management' version '1.1.3'
 	id "org.openapi.generator" version "6.6.0"
+	id "com.diffplug.spotless" version "6.21.0"
 }
 
 group = 'app'
@@ -10,6 +11,18 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = '17'
+}
+
+spotless {
+	java {
+		// 一旦テストコードはフォーマット対象から除外する
+		targetExclude 'src/test/**/*.java'
+
+		importOrder()
+		removeUnusedImports()
+		googleJavaFormat()
+		formatAnnotations()
+	}
 }
 
 configurations {
@@ -39,6 +52,13 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// pre-commit を移動
+task installPreCommitScript(type: Copy) {
+	from new File(rootProject.rootDir, './pre-commit')
+	into { new File(rootProject.rootDir, '.git/hooks') }
+	fileMode 0775
+}
+
 // Springコードの生成先ディレクトリ定数
 ext.GENERATED_SPRING_CODE_DIR="$buildDir/spring"
 
@@ -55,6 +75,15 @@ task springCodeGen(type: org.openapitools.generator.gradle.plugin.tasks.Generate
 		useSpringBoot3: "true"
 	])
 }
+
+// 既存のタスク（spotlessJava）に対して設定を追加する
+tasks.named("spotlessJava").configure {
+	dependsOn ":springCodeGen"
+	inputs.dir("$GENERATED_SPRING_CODE_DIR")
+}
+
+// springCodeGen を実行後に、spotlessJavaApply を実行する
+tasks.springCodeGen.finalizedBy tasks.spotlessJavaApply
 
 // compileJavaを実行する前に、springCodeGenを実行する
 compileJava.dependsOn tasks.springCodeGen

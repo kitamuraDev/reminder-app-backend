@@ -4,7 +4,7 @@
 - スキーマ駆動（OpenAPI generator）
 - SpringBoot（Java） + MyBatis（PostgreSQL）
 - ビルドツールは Gradle（gradlew）を使用
-- リンターは Spotless を使用
+- リンターは Spotless[公式ドキュメント](https://github.com/diffplug/spotless/tree/main/plugin-gradle) を使用
 
 ## テーブル仕様
 
