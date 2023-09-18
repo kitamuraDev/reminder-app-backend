@@ -6,6 +6,12 @@
 - ビルドツールは Gradle（gradlew）を使用
 - リンターは Spotless[公式ドキュメント](https://github.com/diffplug/spotless/tree/main/plugin-gradle) を使用
 
+## セットアップ
+
+1. `git clone https://github.com/kitamuraDev/reminder-app-backend.git`
+2. プロジェクトへ移動
+3. `./gradlew installPreCommitScript`
+
 ## テーブル仕様
 
 ```sql
