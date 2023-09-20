@@ -12,8 +12,35 @@ servers:
 
 # エンドポイント
 paths:
-  /health:
+  /reminders:
     get:
       responses:
         "200":
           description: OK
+
+# 再利用可能なスキーマ定義
+components:
+  schemas:
+    ReminderDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        priority:
+          type: integer
+        isCompleted:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
