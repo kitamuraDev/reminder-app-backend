@@ -12,11 +12,19 @@ servers:
 
 # エンドポイント
 paths:
-  /reminders:
+  /reminders/{id}:
     get:
       summary: "タスク取得"
       description: "指定されたIDのリマインダーを1件取得"
       operationId: "getReminder"
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          description: "リマインダーを取得する一意ID"
+          schema:
+            type: integer
+            format: int64
       responses:
         "200":
           description: OK

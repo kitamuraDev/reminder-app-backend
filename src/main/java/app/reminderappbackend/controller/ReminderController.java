@@ -15,8 +15,8 @@ public class ReminderController implements RemindersApi {
   private final ReminderService reminderService;
 
   @Override
-  public ResponseEntity<ReminderDTO> getReminder() {
-    var entity = reminderService.findById();
+  public ResponseEntity<ReminderDTO> getReminder(Long id) {
+    var entity = reminderService.findById(id);
     var dto = toReminderDTO(entity);
 
     return ResponseEntity.ok(dto);
