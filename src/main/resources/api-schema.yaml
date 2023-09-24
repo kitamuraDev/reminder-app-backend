@@ -14,9 +14,16 @@ servers:
 paths:
   /reminders:
     get:
+      summary: "タスク取得"
+      description: "指定されたIDのリマインダーを1件取得"
+      operationId: "getReminder"
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReminderDTO"
 
 # 再利用可能なスキーマ定義
 components:
@@ -27,20 +34,37 @@ components:
         id:
           type: integer
           format: int64
+          description: "一意ID"
         title:
           type: string
+          description: "タイトル"
         description:
           type: string
+          description: "詳細"
         dueDate:
           type: string
           format: date
+          description: "期限"
         priority:
           type: integer
+          description: "優先度"
         isCompleted:
           type: boolean
+          description: "完了/未完了"
         createdAt:
           type: string
           format: date-time
+          description: "作成日"
         updatedAt:
           type: string
           format: date-time
+          description: "更新日"
+      required:
+        - id
+        - title
+        - description
+        - dueDate
+        - priority
+        - isCompleted
+        - createdAt
+        - updatedAt
