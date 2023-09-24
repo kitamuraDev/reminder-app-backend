@@ -1,5 +1,6 @@
 package app.reminderappbackend.Repository;
 
+import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -7,5 +8,5 @@ import org.apache.ibatis.annotations.Select;
 public interface ReminderRepository {
 
   @Select("SELECT * FROM REMINDER WHERE id = #{id}")
-  ReminderRecord selectById(Long id);
+  Optional<ReminderRecord> selectById(Long id);
 }

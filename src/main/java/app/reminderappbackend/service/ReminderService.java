@@ -15,8 +15,11 @@ public class ReminderService {
   private final ReminderRepository reminderRepository;
 
   public ReminderEntity findById(Long id) {
-    var record = reminderRepository.selectById(id);
-    var entity = toReminderEntity(record);
+    var optRecord = reminderRepository.selectById(id);
+    var entity =
+        optRecord
+            .map(record -> toReminderEntity(record))
+            .orElseThrow(() -> new ReminderEntityNotFoundException(id));
 
     return entity;
   }

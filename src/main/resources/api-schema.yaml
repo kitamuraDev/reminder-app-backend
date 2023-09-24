@@ -32,6 +32,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReminderDTO"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
 
 # 再利用可能なスキーマ定義
 components:
@@ -76,3 +82,17 @@ components:
         - isCompleted
         - createdAt
         - updatedAt
+    ResourceNotFoundError:
+      description: "指定したリソースが存在しない"
+      type: object
+      properties:
+        title:
+          type: string
+          description: "エラーのタイトル"
+          default: "Resource Not Found"
+        detail:
+          type: string
+          description: "エラーの詳細"
+      required:
+        - title
+        - detail
