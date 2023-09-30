@@ -12,6 +12,29 @@ servers:
 
 # エンドポイント
 paths:
+  /reminders/:
+    post:
+      summary: "リマインダー作成"
+      description: "リマインダーの新規作成"
+      operationId: "createReminder"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReminderForm"
+      responses:
+        "201":
+          description: "created"
+          headers:
+            location:
+              description: "作成されたリソースのURI"
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReminderDTO"
   /reminders/{id}:
     get:
       summary: "タスク取得"
@@ -42,6 +65,31 @@ paths:
 # 再利用可能なスキーマ定義
 components:
   schemas:
+    ReminderForm:
+      type: object
+      properties:
+        title:
+          type: string
+          description: "タイトル"
+        description:
+          type: string
+          description: "詳細"
+        dueDate:
+          type: string
+          format: date
+          description: "期限"
+        priority:
+          type: integer
+          description: "優先度"
+        isCompleted:
+          type: boolean
+          description: "完了/未完了"
+      required:
+        - title
+        - description
+        - dueDate
+        - priority
+        - isCompleted
     ReminderDTO:
       type: object
       properties:

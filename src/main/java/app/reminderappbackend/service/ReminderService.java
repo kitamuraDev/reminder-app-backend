@@ -2,11 +2,13 @@ package app.reminderappbackend.service;
 
 import app.reminderappbackend.Repository.ReminderRecord;
 import app.reminderappbackend.Repository.ReminderRepository;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reminderapi.model.ReminderForm;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,29 @@ public class ReminderService {
             .orElseThrow(() -> new ReminderEntityNotFoundException(id));
 
     return entity;
+  }
+
+  public ReminderEntity create(@Valid ReminderForm form) {
+    // form を record に詰めて、Repositoryへ渡す
+    var record = toReminderRecord(form);
+    reminderRepository.insert(record);
+
+    // record to entity
+    var entity = toReminderEntity(record);
+
+    return entity;
+  }
+
+  private ReminderRecord toReminderRecord(ReminderForm form) {
+    return new ReminderRecord(
+        null,
+        form.getTitle(),
+        form.getDescription(),
+        form.getDueDate(),
+        form.getPriority(),
+        form.getIsCompleted(),
+        LocalDateTime.now(),
+        LocalDateTime.now());
   }
 
   private ReminderEntity toReminderEntity(ReminderRecord record) {
