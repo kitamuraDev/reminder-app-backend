@@ -35,6 +35,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReminderDTO"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
   /reminders/{id}:
     get:
       summary: "タスク取得"
@@ -144,3 +150,36 @@ components:
       required:
         - title
         - detail
+    BadRequestError:
+      description: "不正なリクエスト"
+      type: object
+      properties:
+        title:
+          type: string
+          description: "エラーのタイトル"
+          default: "Bad Request"
+        detail:
+          type: string
+          description: "エラーの詳細"
+          default: "リクエストが不正です。正しいリクエストでリトライしてください"
+        invalid-params:
+          type: array
+          items:
+            $ref: "#/components/schemas/InvalidParam"
+      required:
+        - title
+        - detail
+        - invalid-params
+    InvalidParam:
+      description: "不正なリクエストの詳細"
+      type: object
+      properties:
+        name:
+          type: string
+          description: "エラーが発生したフィールド名"
+        reason:
+          type: string
+          description: "エラーが発生した理由"
+      required:
+        - name
+        - reason
