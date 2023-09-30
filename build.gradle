@@ -15,8 +15,8 @@ java {
 
 spotless {
 	java {
-		// 一旦テストコードはフォーマット対象から除外する
-		targetExclude 'src/test/**/*.java'
+		// 自分が書くアプリケーションコードはspotlessの対象外とする（ファイル保存時のフォーマッティングに任せるため）
+		targetExclude 'src/'
 
 		importOrder()
 		removeUnusedImports()
@@ -50,13 +50,6 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
-
-// pre-commit を移動
-task installPreCommitScript(type: Copy) {
-	from new File(rootProject.rootDir, './pre-commit')
-	into { new File(rootProject.rootDir, '.git/hooks') }
-	fileMode 0775
 }
 
 // Springコードの生成先ディレクトリ定数

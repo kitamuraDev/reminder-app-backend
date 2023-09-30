@@ -2,8 +2,10 @@ package app.reminderappbackend.service;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import lombok.Value;
+
 import org.springframework.format.annotation.DateTimeFormat;
+
+import lombok.Value;
 
 @Value
 public class ReminderEntity {

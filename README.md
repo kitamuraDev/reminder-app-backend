@@ -10,7 +10,7 @@
 
 1. `git clone https://github.com/kitamuraDev/reminder-app-backend.git`
 2. プロジェクトへ移動
-3. `./gradlew installPreCommitScript`
+3. エディタを開けば勝手にビルドしてくれるのでやることは特にない（※ビルドされない場合は`build.gradle`をリロードすること）
 
 ## テーブル仕様
 

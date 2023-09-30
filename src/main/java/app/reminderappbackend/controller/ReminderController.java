@@ -1,12 +1,14 @@
 package app.reminderappbackend.controller;
 
+import java.net.URI;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+
 import app.reminderappbackend.service.ReminderEntity;
 import app.reminderappbackend.service.ReminderService;
 import jakarta.validation.Valid;
-import java.net.URI;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
 import reminderapi.controller.RemindersApi;
 import reminderapi.model.ReminderDTO;
 import reminderapi.model.ReminderForm;
