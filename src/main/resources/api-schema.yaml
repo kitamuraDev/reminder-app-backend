@@ -44,6 +44,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReminderListDTO"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
     post:
       summary: "リマインダー作成"
       description: "リマインダーの新規作成"

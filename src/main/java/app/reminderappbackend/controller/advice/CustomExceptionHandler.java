@@ -11,6 +11,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import app.reminderappbackend.service.ReminderEntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
+import reminderapi.model.BadRequestError;
 import reminderapi.model.ResourceNotFoundError;
 
 @RestControllerAdvice
@@ -27,6 +29,19 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     var error = new ResourceNotFoundError("Resource Not Found", ex.getMessage());
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  /**
+   * ConstraintViolationException 発生時のエラーハンドラ
+   *
+   * @param ex
+   * @return ResponseEntity<BadRequestError>
+   */
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<BadRequestError> handleConstraintViolationException(ConstraintViolationException ex) {
+    var error = BadRequestErrorCreator.from(ex);
+
+    return ResponseEntity.badRequest().body(error);
   }
 
   /**
