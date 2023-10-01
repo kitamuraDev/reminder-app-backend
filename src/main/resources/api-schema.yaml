@@ -77,17 +77,21 @@ components:
         title:
           type: string
           description: "タイトル"
+          minLength: 1
+          maxLength: 256
         description:
           type: string
           description: "詳細"
-        dueDate:
+        dueDate: # <xxxx-xx-xx>形式の正規表現が上手く機能しないため、バリデーションはクライアントサイドのみとする
           type: string
           format: date
           description: "期限"
         priority:
           type: integer
           description: "優先度"
-        isCompleted:
+          minimum: 0
+          maximum: 2
+        isCompleted: # 現状、<true> or <false>だけを許容するバリデーション方法がわからないため、バリデーションはクライアントサイドのみとする
           type: boolean
           description: "完了/未完了"
       required:
