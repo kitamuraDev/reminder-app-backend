@@ -13,6 +13,37 @@ servers:
 # エンドポイント
 paths:
   /reminders/:
+    get:
+      summary: "リマインダー一覧取得"
+      description: "リマインダーの一覧取得をします"
+      operationId: "getReminderList"
+      parameters:
+        - name: limit
+          in: query
+          required: true
+          description: "リストに含まれるリソースの最大値"
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          required: true
+          description: "オフセット"
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            default: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReminderListDTO"
     post:
       summary: "リマインダー作成"
       description: "リマインダーの新規作成"
@@ -140,6 +171,35 @@ components:
         - isCompleted
         - createdAt
         - updatedAt
+    PageDTO:
+      description: "ページング情報"
+      type: object
+      properties:
+        limit:
+          description: "リクエストされた limit"
+          type: integer
+          format: int32
+        offset:
+          description: "リクエストされた offset"
+          type: integer
+          format: int64
+        size:
+          description: "取得できた件数"
+          type: integer
+          format: int32
+      required:
+        - limit
+        - offset
+        - size
+    ReminderListDTO:
+      type: object
+      properties:
+        page:
+          $ref: "#/components/schemas/PageDTO"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReminderDTO"
     ResourceNotFoundError:
       description: "指定したリソースが存在しない"
       type: object

@@ -3,6 +3,8 @@ package app.reminderappbackend.service;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,15 @@ public class ReminderService {
             .orElseThrow(() -> new ReminderEntityNotFoundException(id));
 
     return entity;
+  }
+
+  public List<ReminderEntity> findList(Integer limit, Long offset) {
+    List<ReminderRecord> recordList = reminderRepository.selectList(limit, offset);
+    var entityList = recordList.stream()
+      .map(record -> toReminderEntity(record))
+      .collect(Collectors.toList());
+
+    return entityList;
   }
 
   public ReminderEntity create(@Valid ReminderForm form) {
