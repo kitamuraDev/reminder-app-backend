@@ -52,6 +52,13 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// テストのレポートファイルを開く
+task openTestReportFile(type: Exec) {
+	commandLine 'open', "$buildDir/reports/tests/test/index.html"
+}
+// test を実行後に、openTestReportFile を実行する
+tasks.test.finalizedBy tasks.openTestReportFile
+
 // Springコードの生成先ディレクトリ定数
 ext.GENERATED_SPRING_CODE_DIR="$buildDir/spring"
 
