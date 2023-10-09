@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import app.reminderappbackend.Repository.ReminderRecord;
-import app.reminderappbackend.Repository.ReminderRepository;
+import app.reminderappbackend.repository.ReminderRecord;
+import app.reminderappbackend.repository.ReminderRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import reminderapi.model.ReminderForm;

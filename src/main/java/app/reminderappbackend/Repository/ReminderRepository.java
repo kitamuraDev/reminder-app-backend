@@ -1,4 +1,4 @@
-package app.reminderappbackend.Repository;
+package app.reminderappbackend.repository;
 
 import java.util.List;
 import java.util.Optional;
