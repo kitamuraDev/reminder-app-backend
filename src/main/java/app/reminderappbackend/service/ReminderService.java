@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import app.reminderappbackend.repository.ReminderRecord;
 import app.reminderappbackend.repository.ReminderRepository;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import reminderapi.model.ReminderForm;
 
@@ -48,6 +49,16 @@ public class ReminderService {
     var entity = toReminderEntity(record);
 
     return entity;
+  }
+
+  public ReminderEntity update(@Min(1) Long id, @Valid ReminderForm reminderForm) {
+    // idチェック
+    reminderRepository.selectById(id)
+      .orElseThrow(() -> new ReminderEntityNotFoundException(id));
+
+    reminderRepository.update(id, reminderForm);
+
+    return findById(id);
   }
 
   private ReminderRecord toReminderRecord(ReminderForm form) {

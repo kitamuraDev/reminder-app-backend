@@ -104,6 +104,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResourceNotFoundError"
+    put:
+      summary: "リマインダー更新"
+      description: "指定されたIDのリマインダーをリクエストボディの内容で上書きする"
+      operationId: "updateReminder"
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          description: "更新するリマインダーのID"
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReminderForm"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReminderDTO"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
 
 # 再利用可能なスキーマ定義
 components:

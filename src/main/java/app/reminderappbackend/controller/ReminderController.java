@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import app.reminderappbackend.service.ReminderEntity;
 import app.reminderappbackend.service.ReminderService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import reminderapi.controller.RemindersApi;
 import reminderapi.model.PageDTO;
@@ -48,13 +49,20 @@ public class ReminderController implements RemindersApi {
     return ResponseEntity.ok(dto);
   }
 
-
   @Override
   public ResponseEntity<ReminderDTO> createReminder(@Valid ReminderForm form) {
     var entity = reminderService.create(form);
     var dto = toReminderDTO(entity);
 
     return ResponseEntity.created(URI.create("/reminders/" + dto.getId())).body(dto);
+  }
+
+  @Override
+  public ResponseEntity<ReminderDTO> updateReminder(@Min(1) Long id, @Valid ReminderForm reminderForm) {
+    var entity = reminderService.update(id, reminderForm);
+    var dto = toReminderDTO(entity);
+
+    return ResponseEntity.ok(dto);
   }
 
   private static ReminderDTO toReminderDTO(ReminderEntity entity) {
