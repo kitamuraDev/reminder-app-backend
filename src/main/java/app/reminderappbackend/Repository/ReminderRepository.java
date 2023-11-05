@@ -3,6 +3,7 @@ package app.reminderappbackend.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -10,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import jakarta.validation.constraints.Min;
 import reminderapi.model.ReminderForm;
 
 @Mapper
@@ -28,4 +30,8 @@ public interface ReminderRepository {
 
   @Update("UPDATE REMINDER SET title = #{reminderForm.title}, description = #{reminderForm.description}, due_date = #{reminderForm.dueDate}, priority = #{reminderForm.priority}, is_completed = #{reminderForm.isCompleted}, updated_at = CURRENT_TIMESTAMP WHERE id = #{id}")
   void update(@Param("id") Long id, @Param("reminderForm") ReminderForm reminderForm);
+
+  @Delete("DELETE FROM REMINDER WHERE id = #{id}")
+  void delete(@Min(1) Long id);
+
 }

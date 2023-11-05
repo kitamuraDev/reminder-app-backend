@@ -142,6 +142,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResourceNotFoundError"
+    delete:
+      summary: "リマインダー削除"
+      description: "指定されたIDのリマインダーを削除"
+      operationId: "deleteReminder"
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          description: "削除するリマインダーのID"
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        "204":
+          description: "No Content"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
 
 # 再利用可能なスキーマ定義
 components:

@@ -61,6 +61,14 @@ public class ReminderService {
     return findById(id);
   }
 
+  public void delete(@Min(1) Long id) {
+    // idチェック
+    reminderRepository.selectById(id)
+      .orElseThrow(() -> new ReminderEntityNotFoundException(id));
+
+    reminderRepository.delete(id);
+  }
+
   private ReminderRecord toReminderRecord(ReminderForm form) {
     return new ReminderRecord(
         null,

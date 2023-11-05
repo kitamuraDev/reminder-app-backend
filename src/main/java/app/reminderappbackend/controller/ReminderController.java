@@ -65,6 +65,13 @@ public class ReminderController implements RemindersApi {
     return ResponseEntity.ok(dto);
   }
 
+  @Override
+  public ResponseEntity<Void> deleteReminder(@Min(1) Long id) {
+    reminderService.delete(id);
+
+    return ResponseEntity.noContent().build();
+  }
+
   private static ReminderDTO toReminderDTO(ReminderEntity entity) {
     return new ReminderDTO(
         entity.getId(),
