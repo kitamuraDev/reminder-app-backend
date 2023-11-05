@@ -22,6 +22,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import reminderapi.model.ReminderForm;
+
 @MybatisTest
 public class ReminderRepositoryTest {
 
@@ -199,6 +201,50 @@ public class ReminderRepositoryTest {
     }
   }
 
+  @Nested
+  class method_of_update {
+    Long defaultId = 1L;
+    ReminderForm defaultForm = createForm();
+
+    @Test
+    void レコードを更新できるか() {
+      reminderRepository.update(defaultId, defaultForm);
+
+      Optional<ReminderRecord> actualOptRecord = reminderRepository.selectById(defaultId);
+
+      assertEquals(defaultForm.getTitle(), actualOptRecord.get().getTitle());
+      assertEquals(defaultForm.getDescription(), actualOptRecord.get().getDescription());
+      assertEquals(defaultForm.getDueDate(), actualOptRecord.get().getDueDate());
+      assertEquals(defaultForm.getPriority(), actualOptRecord.get().getPriority());
+      assertEquals(defaultForm.getIsCompleted(), actualOptRecord.get().isCompleted());
+    }
+
+    @Test
+    void 更新したレコードのNullチェック() {
+      reminderRepository.update(defaultId, defaultForm);
+
+      Optional<ReminderRecord> actualOptRecord = reminderRepository.selectById(defaultId);
+
+      assertNotNull(actualOptRecord.get().getId());
+      assertNotNull(actualOptRecord.get().getTitle());
+      assertNotNull(actualOptRecord.get().getDescription());
+      assertNotNull(actualOptRecord.get().getDueDate());
+      assertNotNull(actualOptRecord.get().getPriority());
+      assertNotNull(actualOptRecord.get().isCompleted());
+      assertNotNull(actualOptRecord.get().getCreatedAt());
+      assertNotNull(actualOptRecord.get().getUpdatedAt());
+    }
+
+    @Test
+    void 更新するレコードにnullが含まれる場合PersistenceExceptionを投げるか() {
+      ReminderForm form = createHasNullForm();
+
+      assertThrows(PersistenceException.class, () -> {
+        reminderRepository.update(defaultId, form);
+      });
+    }
+  }
+
   private ReminderRecord createExpectedRecord() {
     return new ReminderRecord(
       1L,
@@ -235,6 +281,26 @@ public class ReminderRepositoryTest {
       false,
       LocalDateTime.now(),
       LocalDateTime.now()
+    );
+  }
+
+  private ReminderForm createForm() {
+    return new ReminderForm(
+      "edited title.",
+      "edited description.",
+      LocalDate.now(),
+      1,
+      false
+    );
+  }
+
+  private ReminderForm createHasNullForm() {
+    return new ReminderForm(
+      null,
+      null,
+      LocalDate.now(),
+      1,
+      false
     );
   }
 }

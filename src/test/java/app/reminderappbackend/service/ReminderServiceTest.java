@@ -152,6 +152,20 @@ public class ReminderServiceTest {
       }
     }
 
+    @Nested
+    class method_of_update {
+      @Test
+      void IDが存在しない場合ReminderEntityNotFoundExceptionを投げるか() {
+        Long verifyId = 99L;
+        ReminderForm verifyForm = createForm();
+        when(reminderRepository.selectById(verifyId)).thenReturn(Optional.empty());
+
+        assertThrows(ReminderEntityNotFoundException.class, () -> {
+          reminderService.update(verifyId, verifyForm);
+        });
+      }
+    }
+
     private ReminderRecord createExpectedRecord() {
       return new ReminderRecord(
         1L,
@@ -196,6 +210,16 @@ public class ReminderServiceTest {
         "Hello.",
         "Hello SpringBoot App.",
         LocalDate.of(2023, 10, 26),
+        1,
+        false
+      );
+    }
+
+    private ReminderForm createForm() {
+      return new ReminderForm(
+        "edited title.",
+        "edited description.",
+        LocalDate.now(),
         1,
         false
       );
