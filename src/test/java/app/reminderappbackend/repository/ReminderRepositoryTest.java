@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -242,6 +243,21 @@ public class ReminderRepositoryTest {
       assertThrows(PersistenceException.class, () -> {
         reminderRepository.update(defaultId, form);
       });
+    }
+  }
+
+  @Nested
+  class method_of_delete {
+    Long defaultId = 1L;
+
+    @Test
+    void レコードを削除できるか() {
+      reminderRepository.delete(defaultId);
+
+      assertThrows(NoSuchElementException.class, () -> {
+        Optional<ReminderRecord> actualOptRecord = reminderRepository.selectById(defaultId);
+        actualOptRecord.get();
+      }, "レコードの削除が成功していれば、存在しないレコードにアクセスすることになり、NoSuchElementExceptionが発生するはず");
     }
   }
 

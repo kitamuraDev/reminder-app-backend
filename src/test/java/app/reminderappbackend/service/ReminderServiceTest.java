@@ -166,6 +166,19 @@ public class ReminderServiceTest {
       }
     }
 
+    @Nested
+    class method_of_delete {
+      @Test
+      void IDが存在しない場合ReminderEntityNotFoundExceptionを投げるか() {
+        Long verifyId = 99L;
+        when(reminderRepository.selectById(verifyId)).thenReturn(Optional.empty());
+
+        assertThrows(ReminderEntityNotFoundException.class, () -> {
+          reminderService.delete(verifyId);
+        });
+      }
+    }
+
     private ReminderRecord createExpectedRecord() {
       return new ReminderRecord(
         1L,
