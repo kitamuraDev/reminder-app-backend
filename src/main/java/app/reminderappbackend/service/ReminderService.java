@@ -21,6 +21,12 @@ public class ReminderService {
 
   private final ReminderRepository reminderRepository;
 
+  /**
+   * IDに紐づくリマインダーを取得するサービス
+   *
+   * @param id リマインダーを取得する一意ID
+   * @return ReminderEntity or ReminderEntityNotFoundException
+   */
   public ReminderEntity findById(Long id) {
     var optRecord = reminderRepository.selectById(id);
     var entity =
@@ -31,6 +37,13 @@ public class ReminderService {
     return entity;
   }
 
+  /**
+   * limitとoffsetに基づくリマインダーのリストを取得するサービス
+   *
+   * @param limit リストに含まれるリソースの最大値
+   * @param offset オフセット
+   * @return List<ReminderEntity>
+   */
   public List<ReminderEntity> findList(Integer limit, Long offset) {
     List<ReminderRecord> recordList = reminderRepository.selectList(limit, offset);
     var entityList = recordList.stream()
@@ -40,6 +53,12 @@ public class ReminderService {
     return entityList;
   }
 
+  /**
+   * リマインダー作成するサービス
+   *
+   * @param reminderForm クライアントからPOSTされるフォーム
+   * @return ReminderEntity
+   */
   public ReminderEntity create(@Valid ReminderForm form) {
     // form を record に詰めて、Repositoryへ渡す
     var record = toReminderRecord(form);
@@ -51,6 +70,13 @@ public class ReminderService {
     return entity;
   }
 
+  /**
+   * リマインダー更新するサービス
+   *
+   * @param id 更新するリマインダーのID
+   * @param reminderForm クライアントからPOSTされるフォーム
+   * @return ReminderEntity
+   */
   public ReminderEntity update(@Min(1) Long id, @Valid ReminderForm reminderForm) {
     // idチェック
     reminderRepository.selectById(id)
@@ -61,6 +87,11 @@ public class ReminderService {
     return findById(id);
   }
 
+  /**
+   * リマインダー削除するサービス
+   *
+   * @param id 削除するリマインダーのID
+   */
   public void delete(@Min(1) Long id) {
     // idチェック
     reminderRepository.selectById(id)
