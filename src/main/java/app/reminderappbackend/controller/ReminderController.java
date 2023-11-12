@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.reminderappbackend.service.ReminderEntity;
 import app.reminderappbackend.service.ReminderService;
+import app.reminderappbackend.util.DataTypeConverter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import reminderapi.model.ReminderListDTO;
 public class ReminderController implements RemindersApi {
 
   private final ReminderService reminderService;
+  private final DataTypeConverter converter;
 
   /**
    * GET /reminders/{id} : リマインダー取得
@@ -34,7 +36,7 @@ public class ReminderController implements RemindersApi {
   @Override
   public ResponseEntity<ReminderDTO> getReminder(Long id) {
     var entity = reminderService.findById(id);
-    var dto = toReminderDTO(entity);
+    var dto = converter.toReminderDTO(entity);
 
     return ResponseEntity.ok(dto);
   }
@@ -50,7 +52,7 @@ public class ReminderController implements RemindersApi {
   public ResponseEntity<ReminderListDTO> getReminderList(@RequestParam Integer limit, @RequestParam Long offset) {
     List<ReminderEntity> entityList = reminderService.findList(limit, offset);
     var dtoList = entityList.stream()
-      .map(ReminderController::toReminderDTO)
+      .map((entity) -> converter.toReminderDTO(entity))
       .collect(Collectors.toList());
 
     var pageDTO = new PageDTO(limit, offset, dtoList.size());
@@ -71,7 +73,7 @@ public class ReminderController implements RemindersApi {
   @Override
   public ResponseEntity<ReminderDTO> createReminder(@Valid ReminderForm form) {
     var entity = reminderService.create(form);
-    var dto = toReminderDTO(entity);
+    var dto = converter.toReminderDTO(entity);
 
     return ResponseEntity.created(URI.create("/reminders/" + dto.getId())).body(dto);
   }
@@ -86,7 +88,7 @@ public class ReminderController implements RemindersApi {
   @Override
   public ResponseEntity<ReminderDTO> updateReminder(@Min(1) Long id, @Valid ReminderForm reminderForm) {
     var entity = reminderService.update(id, reminderForm);
-    var dto = toReminderDTO(entity);
+    var dto = converter.toReminderDTO(entity);
 
     return ResponseEntity.ok(dto);
   }
@@ -104,15 +106,4 @@ public class ReminderController implements RemindersApi {
     return ResponseEntity.noContent().build();
   }
 
-  private static ReminderDTO toReminderDTO(ReminderEntity entity) {
-    return new ReminderDTO(
-        entity.getId(),
-        entity.getTitle(),
-        entity.getDescription(),
-        entity.getDueDate(),
-        entity.getPriority(),
-        entity.getIsCompleted(),
-        entity.getCreatedAt(),
-        entity.getUpdatedAt());
-  }
 }
