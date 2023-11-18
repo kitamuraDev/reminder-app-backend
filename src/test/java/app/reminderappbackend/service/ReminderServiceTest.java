@@ -1,9 +1,7 @@
 package app.reminderappbackend.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -32,23 +30,22 @@ public class ReminderServiceTest {
 
       ReminderEntity actualEntity = service.findById(verifyId);
 
-      assertEquals(expectedEntity.getId(), actualEntity.getId());
-      assertEquals(expectedEntity.getTitle(), actualEntity.getTitle());
-      assertEquals(expectedEntity.getDescription(), actualEntity.getDescription());
-      assertEquals(expectedEntity.getDueDate(), actualEntity.getDueDate());
-      assertEquals(expectedEntity.getPriority(), actualEntity.getPriority());
-      assertEquals(expectedEntity.getIsCompleted(), actualEntity.getIsCompleted());
-      assertEquals(expectedEntity.getCreatedAt().withSecond(0).withNano(0), actualEntity.getCreatedAt().withSecond(0).withNano(0));
-      assertEquals(expectedEntity.getUpdatedAt().withSecond(0).withNano(0), actualEntity.getUpdatedAt().withSecond(0).withNano(0));
+      assertThat(actualEntity.getId()).isEqualTo(expectedEntity.getId());
+      assertThat(actualEntity.getTitle()).isEqualTo(expectedEntity.getTitle());
+      assertThat(actualEntity.getDescription()).isEqualTo(expectedEntity.getDescription());
+      assertThat(actualEntity.getDueDate()).isEqualTo(expectedEntity.getDueDate());
+      assertThat(actualEntity.getPriority()).isEqualTo(expectedEntity.getPriority());
+      assertThat(actualEntity.getIsCompleted()).isEqualTo(expectedEntity.getIsCompleted());
+      assertThat(actualEntity.getCreatedAt().withSecond(0).withNano(0)).isEqualTo(expectedEntity.getCreatedAt().withSecond(0).withNano(0));
+      assertThat(actualEntity.getUpdatedAt().withSecond(0).withNano(0)).isEqualTo(expectedEntity.getUpdatedAt().withSecond(0).withNano(0));
     }
 
     @Test
     void 存在しないIDを指定したときにReminderEntityNotFoundExceptionを投げるか() {
       Long verifyId = 99L;
 
-      assertThrows(ReminderEntityNotFoundException.class, () -> {
-        service.findById(verifyId);
-      });
+      assertThatThrownBy(() -> service.findById(verifyId))
+        .isInstanceOf(ReminderEntityNotFoundException.class);
     }
   }
 
@@ -64,24 +61,26 @@ public class ReminderServiceTest {
 
       List<ReminderEntity> actualEntityList = service.findList(defaultLimit, defaultOffset);
 
-      assertNotNull(actualEntityList, "Nullではないはず");
-      assertEquals(expectedListSize, actualEntityList.size(), "テストデータは3件のはず");
+      assertThat(actualEntityList)
+        .isNotNull().as("Nullではないはず")
+        .hasSize(expectedListSize).as("テストデータは3件のはず");
     }
 
     @Test
     void 各フィールドのNullチェック() {
       List<ReminderEntity> actualEntityList = service.findList(defaultLimit, defaultOffset);
 
-      actualEntityList.forEach(actualEntity -> {
-        assertNotNull(actualEntity.getId());
-        assertNotNull(actualEntity.getTitle());
-        assertNotNull(actualEntity.getDescription());
-        assertNotNull(actualEntity.getDueDate());
-        assertNotNull(actualEntity.getPriority());
-        assertNotNull(actualEntity.getIsCompleted());
-        assertNotNull(actualEntity.getCreatedAt());
-        assertNotNull(actualEntity.getUpdatedAt());
-      });
+      assertThat(actualEntityList)
+        .allSatisfy(actualEntity -> {
+          assertThat(actualEntity.getId()).isNotNull();
+          assertThat(actualEntity.getTitle()).isNotNull();
+          assertThat(actualEntity.getDescription()).isNotNull();
+          assertThat(actualEntity.getDueDate()).isNotNull();
+          assertThat(actualEntity.getPriority()).isNotNull();
+          assertThat(actualEntity.getIsCompleted()).isNotNull();
+          assertThat(actualEntity.getCreatedAt()).isNotNull();
+          assertThat(actualEntity.getUpdatedAt()).isNotNull();
+        });
     }
 
     @Test
@@ -91,8 +90,9 @@ public class ReminderServiceTest {
 
       List<ReminderEntity> actualEntityList = service.findList(limit, offset);
 
-      assertTrue(actualEntityList.isEmpty(), "limitが0であれば、Listは空であるはず");
-      assertEquals(0, actualEntityList.size(), "limitが0であれば、Listのサイズは0であるはず");
+      assertThat(actualEntityList)
+        .as("limitが0であれば、Listのサイズは0であるはず").hasSize(0)
+        .as("limitが0であれば、Listは空であるはず").isEmpty();
     }
 
   }
@@ -105,13 +105,14 @@ public class ReminderServiceTest {
       ReminderEntity actualEntity = service.create(form);
 
       // MyBatisの`@Insert`の仕様上、idは戻り値に取れないため、ここではidの検証は実施しないこととする
-      assertNotNull(actualEntity.getTitle());
-      assertNotNull(actualEntity.getDescription());
-      assertNotNull(actualEntity.getDueDate());
-      assertNotNull(actualEntity.getPriority());
-      assertNotNull(actualEntity.getIsCompleted());
-      assertNotNull(actualEntity.getCreatedAt());
-      assertNotNull(actualEntity.getUpdatedAt());
+      assertThat(actualEntity.getTitle()).isNotNull();
+      assertThat(actualEntity.getDescription()).isNotNull();
+      assertThat(actualEntity.getDescription()).isNotNull();
+      assertThat(actualEntity.getDueDate()).isNotNull();
+      assertThat(actualEntity.getPriority()).isNotNull();
+      assertThat(actualEntity.getIsCompleted()).isNotNull();
+      assertThat(actualEntity.getCreatedAt()).isNotNull();
+      assertThat(actualEntity.getUpdatedAt()).isNotNull();
     }
 
     @Test
@@ -119,11 +120,11 @@ public class ReminderServiceTest {
       ReminderForm form = createForm();
       ReminderEntity actualEntity = service.create(form);
 
-      assertEquals(form.getTitle(), actualEntity.getTitle());
-      assertEquals(form.getDescription(), actualEntity.getDescription());
-      assertEquals(form.getDueDate(), actualEntity.getDueDate());
-      assertEquals(form.getPriority(), actualEntity.getPriority());
-      assertEquals(form.getIsCompleted(), actualEntity.getIsCompleted());
+      assertThat(actualEntity.getTitle()).isEqualTo(form.getTitle());
+      assertThat(actualEntity.getDescription()).isEqualTo(form.getDescription());
+      assertThat(actualEntity.getDueDate()).isEqualTo(form.getDueDate());
+      assertThat(actualEntity.getPriority()).isEqualTo(form.getPriority());
+      assertThat(actualEntity.getIsCompleted()).isEqualTo(form.getIsCompleted());
     }
   }
 
@@ -134,9 +135,8 @@ public class ReminderServiceTest {
       Long verifyId = 99L;
       ReminderForm verifyForm = createForm();
 
-      assertThrows(ReminderEntityNotFoundException.class, () -> {
-        service.update(verifyId, verifyForm);
-      });
+      assertThatThrownBy(() -> service.update(verifyId, verifyForm))
+        .isInstanceOf(ReminderEntityNotFoundException.class);
     }
   }
 
@@ -146,9 +146,8 @@ public class ReminderServiceTest {
     void IDが存在しない場合ReminderEntityNotFoundExceptionを投げるか() {
       Long verifyId = 99L;
 
-      assertThrows(ReminderEntityNotFoundException.class, () -> {
-        service.delete(verifyId);
-      });
+      assertThatThrownBy(() -> service.delete(verifyId))
+        .isInstanceOf(ReminderEntityNotFoundException.class);
     }
   }
 

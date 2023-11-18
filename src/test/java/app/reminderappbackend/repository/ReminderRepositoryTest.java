@@ -1,10 +1,7 @@
 package app.reminderappbackend.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,26 +41,28 @@ public class ReminderRepositoryTest {
     @Test
     void 指定のIDに紐づくリソースが取得できるか() {
       Optional<ReminderRecord> actualOptRecord = reminderRepository.selectById(1L);
+      ReminderRecord actualRecord = actualOptRecord.get();
       ReminderRecord expectedRecord = createExpectedRecord();
 
-      assertEquals(expectedRecord.getId(), actualOptRecord.get().getId());
-      assertEquals(expectedRecord.getTitle(), actualOptRecord.get().getTitle());
-      assertEquals(expectedRecord.getDescription(), actualOptRecord.get().getDescription());
-      assertEquals(expectedRecord.getDueDate(), actualOptRecord.get().getDueDate());
-      assertEquals(expectedRecord.getPriority(), actualOptRecord.get().getPriority());
-      assertEquals(expectedRecord.isCompleted(), actualOptRecord.get().isCompleted());
+      assertThat(actualRecord.getId()).isEqualTo(expectedRecord.getId());
+      assertThat(actualRecord.getTitle()).isEqualTo(expectedRecord.getTitle());
+      assertThat(actualRecord.getDescription()).isEqualTo(expectedRecord.getDescription());
+      assertThat(actualRecord.getDueDate()).isEqualTo(expectedRecord.getDueDate());
+      assertThat(actualRecord.getPriority()).isEqualTo(expectedRecord.getPriority());
+      assertThat(actualRecord.isCompleted()).isEqualTo(expectedRecord.isCompleted());
 
       // created_at,updated_at は LocalDateTime型のため、テストを実行する際に秒以下（秒とナノ秒）を0に合わせないとテストが通らない（※テストにおいて秒以下の値比較は重要ではないと判断）
       // そのため、以下のように `withSecond()`と`withNano()` メソッドで秒以下を0に合わせている
-      assertEquals(expectedRecord.getCreatedAt().withSecond(0).withNano(0), actualOptRecord.get().getCreatedAt().withSecond(0).withNano(0));
-      assertEquals(expectedRecord.getUpdatedAt().withSecond(0).withNano(0), actualOptRecord.get().getUpdatedAt().withSecond(0).withNano(0));
+      assertThat(actualRecord.getCreatedAt().withSecond(0).withNano(0)).isEqualTo(expectedRecord.getCreatedAt().withSecond(0).withNano(0));
+      assertThat(actualRecord.getUpdatedAt().withSecond(0).withNano(0)).isEqualTo(expectedRecord.getUpdatedAt().withSecond(0).withNano(0));
     }
 
     @Test
     void 存在しないIDを指定したときにOptionalが空であるか() {
       Optional<ReminderRecord> actualOptRecord = reminderRepository.selectById(99L);
 
-      assertFalse(actualOptRecord.isPresent(), "Optionalは空であるべき");
+      assertThat(actualOptRecord)
+        .isEmpty().as("IDが存在しない場合、Optionalは空であるべき");
     }
   }
 
@@ -77,24 +76,26 @@ public class ReminderRepositoryTest {
       Integer expectedListSize = 3; // テストデータの総数
       List<ReminderRecord> actualRecordList = reminderRepository.selectList(defaultLimit, defaultOffset);
 
-      assertNotNull(actualRecordList, "Nullではないはず");
-      assertEquals(expectedListSize, actualRecordList.size(), "テストデータは3件のはず");
+      assertThat(actualRecordList)
+        .isNotNull().as("Nullではないはず")
+        .hasSize(expectedListSize).as("テストデータは3件のはず");
     }
 
     @Test
     void 各フィールドのNullチェック() {
       List<ReminderRecord> actualRecordList = reminderRepository.selectList(defaultLimit, defaultOffset);
 
-      actualRecordList.forEach(actualRecord -> {
-        assertNotNull(actualRecord.getId());
-        assertNotNull(actualRecord.getTitle());
-        assertNotNull(actualRecord.getDescription());
-        assertNotNull(actualRecord.getDueDate());
-        assertNotNull(actualRecord.getPriority());
-        assertNotNull(actualRecord.isCompleted());
-        assertNotNull(actualRecord.getCreatedAt());
-        assertNotNull(actualRecord.getUpdatedAt());
-      });
+      assertThat(actualRecordList)
+        .allSatisfy(actualRecord -> {
+          assertThat(actualRecord.getId()).isNotNull();
+          assertThat(actualRecord.getTitle()).isNotNull();
+          assertThat(actualRecord.getDescription()).isNotNull();
+          assertThat(actualRecord.getDueDate()).isNotNull();
+          assertThat(actualRecord.getPriority()).isNotNull();
+          assertThat(actualRecord.isCompleted()).isNotNull();
+          assertThat(actualRecord.getCreatedAt()).isNotNull();
+          assertThat(actualRecord.getUpdatedAt()).isNotNull();
+        });
     }
 
     @ParameterizedTest
@@ -102,8 +103,9 @@ public class ReminderRepositoryTest {
     void limitが機能するか_正常系(Integer limit) {
       List<ReminderRecord> actualRecordList = reminderRepository.selectList(limit, defaultOffset);
 
-      assertFalse(actualRecordList.isEmpty(), "limitが0より大きければ、Listは空ではないはず");
-      assertEquals(limit, actualRecordList.size(), "limitが0より大きければ、Listのサイズはlimitと同値であるはず");
+      assertThat(actualRecordList)
+        .isNotEmpty().as("limitが0より大きければ、Listは空ではないはず")
+        .hasSize(limit).as("limitが0より大きければ、Listのサイズはlimitと同値であるはず");
     }
 
     @ParameterizedTest
@@ -112,8 +114,9 @@ public class ReminderRepositoryTest {
       Integer expectedListSize = 0;
       List<ReminderRecord> actualRecordList = reminderRepository.selectList(limit, defaultOffset);
 
-      assertTrue(actualRecordList.isEmpty(), "limitが0であれば、Listは空であるはず");
-      assertEquals(expectedListSize, actualRecordList.size(), "limitが0であれば、Listのサイズは0であるはず");
+      assertThat(actualRecordList)
+        .as("limitが0であれば、Listのサイズは0であるはず").hasSize(expectedListSize)
+        .as("limitが0であれば、Listは空であるはず").isEmpty();
     }
 
     @ParameterizedTest
@@ -122,8 +125,9 @@ public class ReminderRepositoryTest {
       Integer expectedListSize = 3; // テストデータの総数
       List<ReminderRecord> actualRecordList = reminderRepository.selectList(defaultLimit, offset);
 
-      assertFalse(actualRecordList.isEmpty(), "offsetがデータ総数より小さければ、Listは空ではないはず");
-      assertEquals(expectedListSize - offset, actualRecordList.size(), "Listのサイズは「テストデータの総数 - offset」であるはず");
+      assertThat(actualRecordList)
+        .isNotEmpty().as("offsetがデータ総数より小さければ、Listは空ではないはず")
+        .hasSize(Math.toIntExact(expectedListSize - offset)).as("Listのサイズは「テストデータの総数 - offset」であるはず");
     }
 
     @ParameterizedTest
@@ -132,8 +136,9 @@ public class ReminderRepositoryTest {
       Integer expectedListSize = 0;
       List<ReminderRecord> actualRecordList = reminderRepository.selectList(defaultLimit, offset);
 
-      assertTrue(actualRecordList.isEmpty(), "offsetがデータ総数より大きければ、Listは空であるはず");
-      assertEquals(expectedListSize, actualRecordList.size(), "offsetがデータ総数より大きければ、Listのサイズは0であるはず");
+      assertThat(actualRecordList)
+        .as("offsetがデータ総数より大きければ、Listのサイズは0であるはず").hasSize(expectedListSize)
+        .as("offsetがデータ総数より大きければ、Listは空であるはず").isEmpty();
     }
 
     @ParameterizedTest
@@ -147,7 +152,8 @@ public class ReminderRepositoryTest {
       Integer expectedListSize = Math.min(limit, totalsize - offset.intValue());
       List<ReminderRecord> actualRecordList = reminderRepository.selectList(limit, offset);
 
-      assertEquals(expectedListSize, actualRecordList.size(), "Listのサイズは一致するはず");
+      assertThat(actualRecordList)
+        .hasSize(expectedListSize).as("Listのサイズは一致するはず");
     }
   }
 
@@ -159,7 +165,6 @@ public class ReminderRepositoryTest {
     @Test
     void レコードを登録できるか() {
       List<ReminderRecord> beforeList = reminderRepository.selectList(defaultLimit, defaultOffset);
-      Integer expectedListSize = beforeList.size() + 1;
       Long expectedLastIndexId = beforeList.get(beforeList.size() - 1).getId() + 1; // insert前の最終要素のid
 
       ReminderRecord record = createRegisterRecord();
@@ -167,10 +172,12 @@ public class ReminderRepositoryTest {
 
       List<ReminderRecord> afterList = reminderRepository.selectList(defaultLimit, defaultOffset);
       Integer actualListSize = afterList.size();
-      Long actualLastIndexId = afterList.get(afterList.size() - 1).getId(); // insert後の最終要素のid
 
-      assertEquals(expectedListSize, actualListSize, "レコードの登録が成功していれば、Listのサイズは一致するはず");
-      assertEquals(expectedLastIndexId, actualLastIndexId, "DB内でidの自動採番ができていれば、idは一致するはず");
+      assertThat(afterList)
+        .hasSize(actualListSize).as("レコードの登録が成功していれば、Listのサイズは一致するはず")
+        .last()
+        .extracting(ReminderRecord::getId)
+        .isEqualTo(expectedLastIndexId).as("DB内でidの自動採番ができていれば、idは一致するはず");
     }
 
     @Test
@@ -180,25 +187,24 @@ public class ReminderRepositoryTest {
 
       List<ReminderRecord> actualRecordList = reminderRepository.selectList(defaultLimit, defaultOffset);
       Long addedRecordId = Long.valueOf(actualRecordList.size() - 1); // last index
-      Optional<ReminderRecord> actualRecord = reminderRepository.selectById(addedRecordId);
+      ReminderRecord actualRecord = reminderRepository.selectById(addedRecordId).get();
 
-      assertNotNull(actualRecord.get().getId());
-      assertNotNull(actualRecord.get().getTitle());
-      assertNotNull(actualRecord.get().getDescription());
-      assertNotNull(actualRecord.get().getDueDate());
-      assertNotNull(actualRecord.get().getPriority());
-      assertNotNull(actualRecord.get().isCompleted());
-      assertNotNull(actualRecord.get().getCreatedAt());
-      assertNotNull(actualRecord.get().getUpdatedAt());
+      assertThat(actualRecord.getId()).isNotNull();
+      assertThat(actualRecord.getTitle()).isNotNull();
+      assertThat(actualRecord.getDescription()).isNotNull();
+      assertThat(actualRecord.getDueDate()).isNotNull();
+      assertThat(actualRecord.getPriority()).isNotNull();
+      assertThat(actualRecord.isCompleted()).isNotNull();
+      assertThat(actualRecord.getCreatedAt()).isNotNull();
+      assertThat(actualRecord.getUpdatedAt()).isNotNull();
     }
 
     @Test
     void 登録するレコードにnullが含まれる場合PersistenceExceptionを投げるか() {
       ReminderRecord record = createHasNullRecord();
 
-      assertThrows(PersistenceException.class, () -> {
-        reminderRepository.insert(record);
-      });
+      assertThatThrownBy(() -> reminderRepository.insert(record))
+        .isInstanceOf(PersistenceException.class);
     }
   }
 
@@ -211,38 +217,37 @@ public class ReminderRepositoryTest {
     void レコードを更新できるか() {
       reminderRepository.update(defaultId, defaultForm);
 
-      Optional<ReminderRecord> actualOptRecord = reminderRepository.selectById(defaultId);
+      ReminderRecord actualRecord = reminderRepository.selectById(defaultId).get();
 
-      assertEquals(defaultForm.getTitle(), actualOptRecord.get().getTitle());
-      assertEquals(defaultForm.getDescription(), actualOptRecord.get().getDescription());
-      assertEquals(defaultForm.getDueDate(), actualOptRecord.get().getDueDate());
-      assertEquals(defaultForm.getPriority(), actualOptRecord.get().getPriority());
-      assertEquals(defaultForm.getIsCompleted(), actualOptRecord.get().isCompleted());
+      assertThat(actualRecord.getTitle()).isEqualTo(defaultForm.getTitle());
+      assertThat(actualRecord.getDescription()).isEqualTo(defaultForm.getDescription());
+      assertThat(actualRecord.getDueDate()).isEqualTo(defaultForm.getDueDate());
+      assertThat(actualRecord.getPriority()).isEqualTo(defaultForm.getPriority());
+      assertThat(actualRecord.isCompleted()).isEqualTo(defaultForm.getIsCompleted());
     }
 
     @Test
     void 更新したレコードのNullチェック() {
       reminderRepository.update(defaultId, defaultForm);
 
-      Optional<ReminderRecord> actualOptRecord = reminderRepository.selectById(defaultId);
+      ReminderRecord actualRecord = reminderRepository.selectById(defaultId).get();
 
-      assertNotNull(actualOptRecord.get().getId());
-      assertNotNull(actualOptRecord.get().getTitle());
-      assertNotNull(actualOptRecord.get().getDescription());
-      assertNotNull(actualOptRecord.get().getDueDate());
-      assertNotNull(actualOptRecord.get().getPriority());
-      assertNotNull(actualOptRecord.get().isCompleted());
-      assertNotNull(actualOptRecord.get().getCreatedAt());
-      assertNotNull(actualOptRecord.get().getUpdatedAt());
+      assertThat(actualRecord.getId()).isNotNull();
+      assertThat(actualRecord.getTitle()).isNotNull();
+      assertThat(actualRecord.getDescription()).isNotNull();
+      assertThat(actualRecord.getDueDate()).isNotNull();
+      assertThat(actualRecord.getPriority()).isNotNull();
+      assertThat(actualRecord.isCompleted()).isNotNull();
+      assertThat(actualRecord.getCreatedAt()).isNotNull();
+      assertThat(actualRecord.getUpdatedAt()).isNotNull();
     }
 
     @Test
     void 更新するレコードにnullが含まれる場合PersistenceExceptionを投げるか() {
       ReminderForm form = createHasNullForm();
 
-      assertThrows(PersistenceException.class, () -> {
-        reminderRepository.update(defaultId, form);
-      });
+      assertThatThrownBy(() -> reminderRepository.update(defaultId, form))
+        .isInstanceOf(PersistenceException.class);
     }
   }
 
@@ -254,10 +259,9 @@ public class ReminderRepositoryTest {
     void レコードを削除できるか() {
       reminderRepository.delete(defaultId);
 
-      assertThrows(NoSuchElementException.class, () -> {
-        Optional<ReminderRecord> actualOptRecord = reminderRepository.selectById(defaultId);
-        actualOptRecord.get();
-      }, "レコードの削除が成功していれば、存在しないレコードにアクセスすることになり、NoSuchElementExceptionが発生するはず");
+      assertThatThrownBy(() -> reminderRepository.selectById(defaultId).get())
+        .isInstanceOf(NoSuchElementException.class)
+        .as("レコードの削除が成功していれば、存在しないレコードにアクセスすることになり、NoSuchElementExceptionが発生するはず");
     }
   }
 
